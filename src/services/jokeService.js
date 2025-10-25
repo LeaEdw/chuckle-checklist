@@ -1,3 +1,4 @@
+
 export const postNewJoke = async (jokeText) => {
     // 1. Construct the new joke object
     const newJoke = {
@@ -33,6 +34,20 @@ export const postNewJoke = async (jokeText) => {
         // Handle the error (e.g., show an error message to the user)
     }
 };
+
+export const updateToldStatus = async (joke) => {
+    const response = await fetch(`http://localhost:8088/jokes/${joke.id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(joke),
+    });
+
+    return await response.json();
+}
+
 
 // Function to handle the GET request (need for initial load)
 export const getAllJokes = async () => {

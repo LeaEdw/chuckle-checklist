@@ -1,5 +1,7 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:400,700");
-@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Source+Sans+Pro:wght@300&display=swap");
+
+/* @import url("https://fonts.googleapis.com/css?family=Roboto:400,700");
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300"); */
 
 /* Add your own colors here */
 :root {
@@ -32,7 +34,7 @@ body {
   );
   padding: 50px 0;
   box-sizing: border-box;
-  font-family: Roboto, sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 400;
 }
 
@@ -74,6 +76,7 @@ these styles and create your own styles and layout for the application.
   .app-heading-text {
     font-size: 2.5rem;
     margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 }
 
@@ -109,8 +112,8 @@ h2 {
     margin: 1rem 0;
     border-radius: 0rem 0.5rem 0.5rem 0rem;
     background: white;
-    color: var(--col-5);
-    border: 2px solid var(--col-5);
+    color: var(--col-3);
+    border: 2px solid var(--col-3);
   }
 
   /** Adds styling for when the user hovers over the button*/
@@ -118,7 +121,7 @@ h2 {
   .joke-input-submit:active {
     cursor: pointer;
     transition: all 0.25s ease-in;
-    background: var(--col-5);
+    background: var(--col-3);
     color: white;
   }
 
@@ -127,6 +130,7 @@ h2 {
   .joke-input-submit {
     outline: none;
     padding: 0.5rem 1rem;
+    font: 1rem;
   }
 }
 
@@ -145,12 +149,12 @@ h2 {
 
     /** Class for the count of told jokes. Add it to a <span> element within the <h2> for Told */
     .told-count {
-      color: var(--col-5);
+      color: var(--col-1);
     }
 
     /** Class for the count of untold jokes. Add it to a <span> element within the <h2> for Untold */
     .untold-count {
-      color: var(--col-0);
+      color: var(--col-3);
     }
 
     /** Adds styles for both the told-count class and the untold-count class*/
@@ -159,6 +163,11 @@ h2 {
       float: right;
     }
   }
+}
+
+hr {
+  color: var(--col-3);
+  border: 2px solid;
 }
 
 /** Class for an individual <li>*/
@@ -175,8 +184,9 @@ h2 {
   /** Class for the joke text. Add it to a <p> element*/
   .joke-list-item-text {
     margin: 0;
-    font-size: 0.7rem;
+    font-size: 1rem;
     flex-basis: 75%;
+    line-height: 1.5;
   }
 
   /** Classes for the action buttons. Wrap the buttons in their own div*/
@@ -203,4 +213,20 @@ h2 {
     cursor: pointer;
     transition: all 0.1s ease-in;
   }
+}
+
+.button-icon {
+  border: none;
+  background: none;
+}
+
+.button-icon:hover,
+.button-icon:active {
+  cursor: pointer;
+  transition: all 0.0s ease-in;
+  color:  var(--col-5);
+}
+
+.list-title {
+  margin-left: 5px;
 }
