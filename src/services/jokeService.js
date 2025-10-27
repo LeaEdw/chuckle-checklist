@@ -1,3 +1,21 @@
+export const deleteJoke = async (jokeId) => {
+    const response = await fetch(`http://localhost:8088/jokes/${jokeId}`, {
+        method: "DELETE",
+    });
+
+    return response.ok;
+};
+
+export const postDeletedJoke = async (joke) => {
+    const response = await fetch("http://localhost:8088/deletedJokes", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(joke),
+    });
+    return await response.json();
+}
 
 export const postNewJoke = async (jokeText) => {
     // 1. Construct the new joke object
@@ -12,7 +30,7 @@ export const postNewJoke = async (jokeText) => {
     const response = await fetch("http://localhost:8088/jokes", {
         method: 'POST', // Set the POST method
         headers: {
-            'Content-type': 'application/json', // Tell the ser er the data is JSON
+            'Content-type': 'application/json', // Tell the server the data is JSON
         },
         // Convert the JavaScript object to a JSON string for the body
         body: JSON.stringify(newJoke),

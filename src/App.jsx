@@ -1,6 +1,12 @@
 import "./App.css";
 import { useState, useEffect } from "react";
-import { postNewJoke, getAllJokes, updateToldStatus} from "./services/jokeService.js";
+import {
+  postNewJoke,
+  getAllJokes,
+  updateToldStatus,
+  deleteJoke,
+  postDeletedJoke,
+} from "./services/jokeService.js";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { byPrefixAndName } from '@awesome.me/kit-KIT_CODE/icons'
 
@@ -9,6 +15,7 @@ export const App = () => {
   const [jokes, setJokes] = useState([]);
   const [toldJokes, setToldJokes] = useState([]);
   const [untoldJokes, setUntoldJokes] = useState([]);
+  const [deleteJokes, setDeletedJokes] = useState([]);
 
   useEffect(() => {
     getAllJokes().then((jokesArray) => {
@@ -42,35 +49,59 @@ export const App = () => {
       // or add the joke to you local state
       handleJokeAdded(newlyAddedJoke);
     }
-
-  };   
-  
-const toggleJokeTold = async (jokeId) => {
-  // 1. Find the full joke object from state
-  const jokeToToggle = jokes.find(joke => joke.id === parseInt(jokeId));
-  
-  if (!jokeToToggle) return;
-
-  const updatedJoke = {
-    ...jokeToToggle, 
-    told: !jokeToToggle.told // Toggle the told status
   };
 
-  // 3. API CALL: Pass the complete object to the service
-  const successfullyUpdatedJoke = await updateToldStatus(updatedJoke);
+  const toggleJokeTold = async (jokeId) => {
+    // 1. Find the full joke object from state
+    const jokeToToggle = jokes.find((joke) => joke.id === parseInt(jokeId));
 
-if (successfullyUpdatedJoke) {
-    setJokes(currentJokes => {
-      return currentJokes.map(joke => {
-        // If the ID matches, use the new, updated object
-        if (joke.id === jokeId) {
-          return successfullyUpdatedJoke; // Use the object returned from the API
-        }
-        return joke;
+    if (!jokeToToggle) return;
+
+    const updatedJoke = {
+      ...jokeToToggle,
+      told: !jokeToToggle.told, // Toggle the told status
+    };
+
+    // 3. API CALL: Pass the complete object to the service
+    const successfullyUpdatedJoke = await updateToldStatus(updatedJoke);
+
+    if (successfullyUpdatedJoke) {
+      setJokes((currentJokes) => {
+        return currentJokes.map((joke) => {
+          // If the ID matches, use the new, updated object
+          if (joke.id === jokeId) {
+            return successfullyUpdatedJoke; // Use the object returned from the API
+          }
+          return joke;
+        });
       });
-    });
-  }
-};
+    }
+  };
+
+  const jokeToDelete = async (jokeId) => {
+    //Find the joke to move to the deleted array
+    const jokeFound = jokes.find((joke) => joke.id === jokeId);
+    if (jokeFound) {
+      const deleteSuccess = await deleteJoke(jokeId);
+
+      if (deleteSuccess) {
+        const moveDeletedJoke = await postDeletedJoke(jokeFound);
+
+        if (moveDeletedJoke) {
+          setJokes((currentJokes) =>
+            currentJokes.filter((joke) => joke.id !== parseInt(jokeId))
+          );
+
+          setDeletedJokes((currentDeletedJokes) => [
+            ...currentDeletedJokes,
+            jokeFound,
+          ]);
+        }
+      } else {
+        console.log("Failed to delete joke from API");
+      }
+    }
+  };
 
   return (
     <div className="app-container">
@@ -79,7 +110,7 @@ if (successfullyUpdatedJoke) {
       </div>
       <h2>Add Your Own Joke</h2>
       <hr />
-      <div >
+      <div>
         <form className="joke-add-form" onSubmit={handlePostJoke}>
           <input
             className="joke-input"
@@ -97,33 +128,62 @@ if (successfullyUpdatedJoke) {
       <div className="joke-lists-container">
         <ul className="joke-list-container">
           <h2>
-          <i className="fa-regular fa-face-meh"></i><span className="list-title">Untold</span> <span className="untold-count">{untoldJokes.length}</span>
-          < hr/>
-        </h2>
+            <i className="fa-regular fa-face-meh"></i>
+            <span className="list-title">Untold</span>{" "}
+            <span className="untold-count">{untoldJokes.length}</span>
+            <hr />
+          </h2>
           <div className="untoldJoke">
             {untoldJokes.map((untoldJoke) => (
               <li key={untoldJoke.id} className="joke-list-item">
                 <p className="joke-list-item-text">{untoldJoke.text}</p>
-                <button className="button-icon" 
-                aria-label="Mark joke as told"
-                onClick={() => toggleJokeTold(untoldJoke.id)}><i className="fa-regular fa-face-laugh-squint" aria-hidden="true"></i></button>
+                <button
+                  className="button-icon"
+                  aria-label="Delete Joke"
+                  onClick={() => jokeToDelete(untoldJoke.id)}
+                >
+                  <i className="fa-solid fa-trash-can"></i>
+                </button>
+                <button
+                  className="button-icon"
+                  aria-label="Mark joke as told"
+                  onClick={() => toggleJokeTold(untoldJoke.id)}
+                >
+                  <i
+                    className="fa-regular fa-face-laugh-squint"
+                    aria-hidden="true"
+                  ></i>
+                </button>
               </li>
             ))}
           </div>
         </ul>
         <ul className="joke-list-container">
           <h2>
-          <i className="fa-regular fa-face-laugh-squint"></i><span className="list-title">Told</span><span className="told-count">{toldJokes.length}</span>
-                    < hr/>
-
-        </h2>
+            <i className="fa-regular fa-face-laugh-squint"></i>
+            <span className="list-title">Told</span>
+            <span className="told-count">{toldJokes.length}</span>
+            <hr />
+          </h2>
           <div className="toldJoke">
             {toldJokes.map((toldJoke) => (
               <li key={toldJoke.id} className="joke-list-item">
                 <p className="joke-list-item-text">{toldJoke.text}</p>
-                <button className="button-icon" 
-                aria-label="Mark joke as untold"
-                onClick={() => toggleJokeTold(toldJoke.id)}><i className="fa-regular fa-face-meh" aria-hidden="true"></i></button>
+                <button
+                  className="button-icon"
+                  aria-label="Delete Joke"
+                  onClick={() => jokeToDelete(toldJoke.id)}
+                >
+                  <i className="fa-solid fa-trash-can"></i>
+                </button>
+
+                <button
+                  className="button-icon"
+                  aria-label="Mark joke as untold"
+                  onClick={() => toggleJokeTold(toldJoke.id)}
+                >
+                  <i className="fa-regular fa-face-meh" aria-hidden="true"></i>
+                </button>
               </li>
             ))}
           </div>
