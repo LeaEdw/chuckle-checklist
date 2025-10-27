@@ -192,3 +192,5 @@ export const App = () => {
     </div>
   );
 };
+
+// TODO: Add a function to view and restore delete jokes!
